@@ -1,0 +1,38 @@
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: data-ingestion-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: data-ingestion
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - data-ingestion-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: data-ingestion-app
+    ports:
+      - "3000:3000"
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/data-ingestion
+      NODE_ENV: development
+      AWS_REGION: eu-north-1
+    depends_on:
+      - mongodb
+    networks:
+      - data-ingestion-network
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+volumes:
+  mongodb_data:
+
+networks:
+  data-ingestion-network:
+    driver: bridge
