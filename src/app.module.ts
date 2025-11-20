@@ -8,7 +8,7 @@ import { IngestionModule } from './modules/ingestion/ingestion.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env.local',
+      envFilePath: '.env',
     }),
     MongoDbModule,
     PropertiesModule,
