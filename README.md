@@ -1,99 +1,238 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Data Ingestion Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Multi-source JSON data ingestion service with MongoDB storage and flexible query API.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Features
 
-## Description
+- 🔄 Multiple data source support (Source 1: 200KB, Source 2: 150MB)
+- 🚀 Scalable streaming ingestion for large files
+- 🔍 Flexible filtering API (city, country, price range, availability, text search)
+- 📦 Automatic batch processing and deduplication
+- ⏰ Scheduled ingestion with Cron jobs
+- 🏗️ Adapter pattern for easy source extensibility
+- 🐳 Docker Compose setup
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Tech Stack
 
-## Project setup
+- NestJS + TypeScript
+- MongoDB + Mongoose
+- AWS S3
+- Jest + Supertest
+
+## Installation
 
 ```bash
-$ npm install
+npm install
 ```
 
-## Compile and run the project
+## Environment Setup
+
+Copy `.env`:
+```bash
+MONGODB_URI=mongodb://localhost:27017/data-ingestion
+NODE_ENV=development
+PORT=3000
+
+# AWS S3 Configuration
+AWS_REGION=eu-north-1
+AWS_ACCESS_KEY_ID=your_access_key_id
+AWS_SECRET_ACCESS_KEY=your_secret_access_key
+
+# S3 Buckets
+# Bucket names
+S3_BUCKET_1=buenro-tech-assessment-materials
+S3_BUCKET_2=buenro-tech-assessment-materials
+
+# Keys (objetos dentro del bucket)
+S3_SOURCE1_KEY=structured_generated_data.json
+S3_SOURCE2_KEY=large_generated_data.json
+```
+
+## Running Locally
 
 ```bash
-# development
-$ npm run start
+# Start MongoDB
+docker-compose up mongodb
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+# Run the app
+npm run start:dev
 ```
 
-## Run tests
+## Running with Docker
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+docker-compose up
 ```
 
-## Deployment
+## API Endpoints
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Query Properties
 
 ```bash
-$ npm install -g mau
-$ mau deploy
+# Get all properties
+GET /api/properties
+
+# Filter by city
+GET /api/properties?city=Osaka
+
+# Filter by price range
+GET /api/properties?priceMin=100&priceMax=500
+
+# Filter by availability
+GET /api/properties?availability=true
+
+# Text search
+GET /api/properties?search=Cabin
+
+# Pagination
+GET /api/properties?limit=20&offset=0
+
+# Complex query via POST
+POST /api/properties/query
+{
+  "city": "Tokyo",
+  "country": "Japan",
+  "availability": true,
+  "priceMin": 200,
+  "priceMax": 600,
+  "limit": 20,
+  "offset": 0
+}
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Ingestion Control (Manual Trigger)
 
-## Resources
+```bash
+# Trigger Source 1 ingestion
+POST /api/ingestion/trigger-source1
 
-Check out a few resources that may come in handy when working with NestJS:
+# Trigger Source 2 ingestion
+POST /api/ingestion/trigger-source2
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Health check
+GET /api/ingestion/health
+```
 
-## Support
+## Testing
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+# Unit tests
+npm run test
 
-## Stay in touch
+# E2E tests
+npm run test:e2e
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# Watch mode
+npm run test:watch
+```
 
-## License
+## Extending with New Data Sources
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+### 1. Create a new adapter
+
+```typescript
+// src/modules/ingestion/adapters/source3.adapter.ts
+import { Injectable } from '@nestjs/common'
+import { BaseDataSourceAdapter } from './base.adapter'
+import { UnifiedProperty } from '../../../shared/interfaces/unified-property.interface'
+
+@Injectable()
+export class Source3Adapter extends BaseDataSourceAdapter {
+  validate(data: any): boolean {
+    return !!(data.id && data.location && data.price)
+  }
+
+  transformToUnified(raw: any): UnifiedProperty {
+    return {
+      sourceId: 'source3',
+      externalId: raw.id,
+      city: raw.location.city,
+      country: raw.location.country,
+      availability: raw.isAvailable ?? false,
+      pricePerNight: raw.price,
+      sourceData: raw,
+    }
+  }
+}
+```
+
+### 2. Register in config
+
+```typescript
+// src/config/s3.config.ts
+export const INGESTION_SOURCES = {
+  // ...existing sources...
+  source3: {
+    bucket: 'my-bucket',
+    key: 'source3_data.json',
+    enabled: true,
+    schedule: '0 4 * * *', // 4 AM daily
+  },
+}
+```
+
+### 3. Add to Ingestion Module
+
+```typescript
+// src/modules/ingestion/ingestion.module.ts
+import { Source3Adapter } from './adapters/source3.adapter'
+
+@Module({
+  // ...
+  providers: [
+    IngestionService,
+    IngestionSchedulerService,
+    Source1Adapter,
+    Source2Adapter,
+    Source3Adapter, // NEW
+  ],
+})
+export class IngestionModule {}
+```
+
+### 4. Create scheduler method
+
+```typescript
+// src/modules/ingestion/services/ingestion-scheduler.service.ts
+@Cron('0 4 * * *')
+async scheduleSource3Ingestion() {
+  const sourceConfig = INGESTION_SOURCES['source3']
+  if (!sourceConfig.enabled) return
+
+  try {
+    const data = await this.s3Service.getObjectAsJSON(sourceConfig.bucket, sourceConfig.key)
+    await this.ingestionService.ingestFromJSON(data, this.source3Adapter, 'source3')
+  } catch (error) {
+    this.logger.error(`Source 3 ingestion failed: ${error.message}`)
+  }
+}
+```
+
+Done! No other changes needed.
+
+## Project Structure
+
+```
+src/
+├── config/              # Configuration files
+├── core/
+│   ├── database/        # MongoDB setup
+│   └── s3/              # S3 integration
+├── modules/
+│   ├── ingestion/       # Data ingestion logic
+│   └── properties/      # Properties API
+├── shared/              # Shared interfaces & types
+└── app.module.ts        # Root module
+
+test/
+├── unit/                # Unit tests
+└── e2e/                 # Integration tests
+```
+
+## Performance Considerations
+
+- **Batch Processing**: Records inserted in batches of 1000
+- **Indexing**: Strategic indexes on frequently queried fields
+- **Streaming**: Large files processed as streams, not loaded into memory
+- **Pagination**: All queries paginated (default 20 records)
+- **Deduplication**: Upsert pattern prevents duplicates from re-ingestion
