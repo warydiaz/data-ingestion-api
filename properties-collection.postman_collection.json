@@ -1,0 +1,165 @@
+{
+  "info": {
+    "name": "Properties API Collection Updated",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Get All Properties",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/properties"
+      }
+    },
+    {
+      "name": "2. Filter by City Only",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/properties?city=Osaka"
+      }
+    },
+    {
+      "name": "3. Filter by Country",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/properties?country=Japan"
+      }
+    },
+    {
+      "name": "4. Availability - true",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/properties?availability=true"
+      }
+    },
+    {
+      "name": "5. Availability - false",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/properties?availability=false"
+      }
+    },
+    {
+      "name": "6. Price Range Cheap",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/properties?priceMin=100&priceMax=200"
+      }
+    },
+    {
+      "name": "7. Price Range Expensive",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/properties?priceMin=800&priceMax=1000"
+      }
+    },
+    {
+      "name": "8. Text Search",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/properties?search=Cabin"
+      }
+    },
+    {
+      "name": "9. Search City (partial)",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/properties?search=Tokyo"
+      }
+    },
+    {
+      "name": "10. City + Price",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/properties?city=Sydney&priceMin=200&priceMax=600"
+      }
+    },
+    {
+      "name": "11. Country + Availability",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/properties?country=Australia&availability=true"
+      }
+    },
+    {
+      "name": "12. Full Combination",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/properties?city=Melbourne&priceMin=200&priceMax=700&availability=true"
+      }
+    },
+    {
+      "name": "13. Pagination - First 10",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/properties?limit=10&offset=0"
+      }
+    },
+    {
+      "name": "14. Pagination - Next 10",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/properties?limit=10&offset=10"
+      }
+    },
+    {
+      "name": "15. Pagination + City Filter",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/properties?city=Fortaleza&limit=10&offset=0"
+      }
+    },
+    {
+      "name": "16. Search + Price Range",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/properties?search=Bungalow&priceMin=300&priceMax=700"
+      }
+    },
+    {
+      "name": "17. Country + Availability + Price",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/properties?country=USA&availability=true&priceMin=150&priceMax=400"
+      }
+    },
+    {
+      "name": "18. POST Query (complex)",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/properties/query",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"city\": \"Tokyo\",\n  \"country\": \"Japan\",\n  \"availability\": true,\n  \"priceMin\": 200,\n  \"priceMax\": 600,\n  \"limit\": 20,\n  \"offset\": 0\n}"
+        }
+      }
+    },
+    {
+      "name": "20. Health Check",
+      "request": {
+        "method": "GET",
+        "url": "http://localhost:3000/api/ingestion/health"
+      }
+    },
+    {
+      "name": "21. Trigger Ingestion (Source 1)",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/ingestion/trigger-source1"
+      }
+    },
+    {
+      "name": "22. Trigger Ingestion (Source 2)",
+      "request": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/ingestion/trigger-source2"
+      }
+    }
+  ]
+}
