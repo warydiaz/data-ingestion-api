@@ -5,7 +5,7 @@ import { IngestionService } from './ingestion.service';
 import { S3Service } from '../../../core/s3/s3.service';
 import { Source1Adapter } from '../adapters/source1.adapter';
 import { Source2Adapter } from '../adapters/source2.adapter';
-import { INGESTION_SOURCES } from '../../../config/s3.config';
+import { S3ConfigService } from '../../../config/s3.config';
 
 @Injectable()
 export class IngestionSchedulerService {
@@ -16,13 +16,14 @@ export class IngestionSchedulerService {
     private s3Service: S3Service,
     private source1Adapter: Source1Adapter,
     private source2Adapter: Source2Adapter,
+    private s3ConfigService: S3ConfigService,
   ) {}
 
   @Cron('0 2 * * *')
   async scheduleSource1Ingestion() {
-    const sourceConfig = INGESTION_SOURCES['source1'];
+    const sourceConfig = this.s3ConfigService.getSourceConfig('source1');
 
-    if (!sourceConfig.enabled) {
+    if (!sourceConfig || !sourceConfig.enabled) {
       this.logger.log('Source 1 ingestion is disabled');
       return;
     }
@@ -49,9 +50,9 @@ export class IngestionSchedulerService {
 
   @Cron('0 3 * * 0')
   async scheduleSource2Ingestion() {
-    const sourceConfig = INGESTION_SOURCES['source2'];
+    const sourceConfig = this.s3ConfigService.getSourceConfig('source2');
 
-    if (!sourceConfig.enabled) {
+    if (!sourceConfig || !sourceConfig.enabled) {
       this.logger.log('Source 2 ingestion is disabled');
       return;
     }

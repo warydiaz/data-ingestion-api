@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Injectable, Logger } from '@nestjs/common';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { Readable } from 'stream';
@@ -10,9 +12,10 @@ export class S3Service {
   constructor() {
     this.s3Client = new S3Client({
       region: process.env.AWS_REGION || 'eu-north-1',
-      credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+      // Explicitly disable the request signing mechanism
+      signer: {
+        // eslint-disable-next-line @typescript-eslint/require-await
+        sign: async (request) => request,
       },
     });
   }
@@ -64,6 +67,7 @@ export class S3Service {
       }
 
       const data = Buffer.concat(chunks).toString('utf-8');
+
       return JSON.parse(data);
     } catch (error) {
       this.logger.error(`Error fetching JSON from S3: ${error.message}`);
